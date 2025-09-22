@@ -3,6 +3,18 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
+  
+  // GitHub Pages 部署配置
+  ssr: false,
+  app: {
+    baseURL: '/test_frontend_v2/',
+    cdnURL: '/test_frontend_v2/',
+  },
+  nitro: {
+    prerender: {
+      routes: ['/']
+    }
+  },
 
   modules: ['@nuxtjs/i18n', '@pinia/nuxt', '@nuxt/image', '@unocss/nuxt', '@nuxtjs/google-fonts'],
 
