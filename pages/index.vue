@@ -256,7 +256,7 @@ const handleEnterSubmit = async () => {
       if (result.success) {
         await showMessageDialog(t('success'), t('modifySuccess'), 'success')
         clearForm()
-        userStore.exitEditMode()
+        userStore.clearEditingState()
       } else {
         await showMessageDialog(t('error'), result.error, 'error')
       }
