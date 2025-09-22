@@ -51,13 +51,13 @@ const hide = () => {
   dialogRef.value?.close()
 }
 
-// 處理確認
+// 確認
 const handleConfirm = () => {
   hide()
   emit('confirm')
 }
 
-// 處理取消
+// 取消
 const handleCancel = () => {
   hide()
   emit('cancel')
@@ -136,7 +136,6 @@ defineExpose({
   justify-content: center;
 }
 
-// 響應式設計
 @media (max-width: 480px) {
   .confirm-dialog {
     max-width: 320px;

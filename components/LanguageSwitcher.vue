@@ -60,7 +60,7 @@ const switchToLanguage = (newLocale: 'zh-TW' | 'en-US') => {
   transition: all 0.3s ease;
   min-width: 50px;
   
-  // 非活躍狀態（未選中）
+  // 未選取
   background-color: transparent;
   color: #888888;
   
@@ -74,7 +74,7 @@ const switchToLanguage = (newLocale: 'zh-TW' | 'en-US') => {
     transform: translateY(0);
   }
 
-  // 活躍狀態（已選中）
+  // 已選取
   &.active {
     background-color: #fbfbfb;
     color: #2a2a2a;
@@ -89,7 +89,6 @@ const switchToLanguage = (newLocale: 'zh-TW' | 'en-US') => {
   }
 }
 
-// 響應式設計
 @media (max-width: 768px) {
   .language-switcher {
     top: 15px;

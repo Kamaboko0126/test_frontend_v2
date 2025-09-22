@@ -14,6 +14,7 @@
       @blur="handleBlur"
       @focus="handleFocus"
       @keydown="handleKeydown"
+      @keypress="handleKeypress"
       class="e-text-field__input"
       :class="{
         'e-text-field__input--focused': isFocused,
@@ -32,6 +33,11 @@ import { ref, computed } from 'vue'
 
 // 使用 Vue 3.4 的 defineModel 語法
 const value = defineModel<string>('value', { default: '' })
+
+// 定義事件
+const emit = defineEmits<{
+  enter: []
+}>()
 
 interface Props {
   id?: string // 若使用者有輸入，以使用者輸入的為主，若沒有請產出一個唯一 ID
@@ -95,6 +101,26 @@ const handleInput = (event: Event) => {
 }
 
 const handleKeydown = (event: KeyboardEvent) => {
+  // 檢查是否按下 Enter 鍵
+  if (event.key === 'Enter') {
+    console.log('Enter 鍵被按下')
+    console.log('errorMessage.value:', errorMessage.value)
+    
+    // 阻止預設行為和事件傳播
+    event.preventDefault()
+    event.stopPropagation()
+    
+    // 如果有驗證錯誤，不執行提交
+    if (errorMessage.value) {
+      console.log('有驗證錯誤，不發出事件')
+      return
+    }
+    // 發出 enter 事件
+    console.log('發出 enter 事件')
+    emit('enter')
+    return
+  }
+  
   // 對於年齡輸入，阻止負號和其他特殊字符
   if (props.validateType === 'age') {
     const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End']
@@ -118,6 +144,15 @@ const handleFocus = () => {
 
 const handleBlur = () => {
   isFocused.value = false
+}
+
+const handleKeypress = (event: KeyboardEvent) => {
+  // 阻止 Enter 鍵的預設 keypress 行為
+  if (event.key === 'Enter') {
+    console.log('Keypress Enter 被阻止')
+    event.preventDefault()
+    event.stopPropagation()
+  }
 }
 </script>
 
@@ -169,11 +204,11 @@ const handleBlur = () => {
 
     // 隱藏數字輸入的上下箭頭
     &[type="number"] {
-      -moz-appearance: textfield; // Firefox
-
+      appearance: textfield;
+      -moz-appearance: textfield;
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button {
-        -webkit-appearance: none; // Chrome, Safari, Edge
+        -webkit-appearance: none;
         margin: 0;
       }
     }
@@ -187,7 +222,6 @@ const handleBlur = () => {
   }
 }
 
-// 響應式設計
 @media (max-width: 480px) {
   .e-text-field {
     &__input {

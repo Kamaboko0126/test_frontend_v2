@@ -123,7 +123,6 @@ const handleClick = (event: MouseEvent) => {
   }
 }
 
-// 響應式設計
 @media (max-width: 480px) {
   .e-btn {
     padding: 10px 16px;

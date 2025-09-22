@@ -1,10 +1,7 @@
 <template>
   <dialog ref="dialogRef" class="message-dialog" @click="handleBackdropClick">
     <div class="dialog-content" @click.stop>
-      <div class="dialog-header">
-        <div class="dialog-icon" :class="iconClass">
-          {{ iconText }}
-        </div>
+      <div class="dialog-header" :class="headerClass">
         <h3 class="dialog-title">{{ title }}</h3>
       </div>
 
@@ -41,20 +38,8 @@ const emit = defineEmits<{
 
 const dialogRef = ref<HTMLDialogElement>()
 
-// 圖示相關
-const iconClass = computed(() => `dialog-icon--${props.type}`)
-const iconText = computed(() => {
-  switch (props.type) {
-    case 'success':
-      return '✅'
-    case 'error':
-      return '❌'
-    case 'warning':
-      return '⚠️'
-    default:
-      return 'ℹ️'
-  }
-})
+// 標題樣式類別
+const headerClass = computed(() => `dialog-header--${props.type}`)
 
 // 顯示對話框
 const show = async () => {
@@ -80,7 +65,7 @@ const handleBackdropClick = (event: MouseEvent) => {
   }
 }
 
-// 給父組件使用
+// 給父組件
 defineExpose({
   show,
   hide,
@@ -117,37 +102,50 @@ defineExpose({
 
 .dialog-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid transparent;
 
-  .dialog-icon {
-    font-size: 48px;
-    margin-bottom: 12px;
+  &--success {
+    border-bottom-color: #22c55e;
+  }
 
-    &--success {
-      color: #22c55e;
-    }
+  &--error {
+    border-bottom-color: #ef4444;
+  }
 
-    &--error {
-      color: #ef4444;
-    }
+  &--warning {
+    border-bottom-color: #f59e0b;
+  }
 
-    &--warning {
-      color: #f59e0b;
-    }
-
-    &--info {
-      color: #3b82f6;
-    }
+  &--info {
+    border-bottom-color: #3b82f6;
   }
 
   .dialog-title {
     margin: 0;
     font-size: 20px;
     font-weight: 600;
-    color: #fbfbfb;
     text-align: center;
+
+    // 根據類型設定標題顏色
+    .dialog-header--success & {
+      color: #22c55e;
+    }
+
+    .dialog-header--error & {
+      color: #ef4444;
+    }
+
+    .dialog-header--warning & {
+      color: #f59e0b;
+    }
+
+    .dialog-header--info & {
+      color: #3b82f6;
+    }
   }
 }
 
@@ -169,7 +167,6 @@ defineExpose({
   justify-content: center;
 }
 
-// 響應式設計
 @media (max-width: 480px) {
   .message-dialog {
     max-width: 320px;
@@ -182,11 +179,7 @@ defineExpose({
 
   .dialog-header {
     margin-bottom: 16px;
-
-    .dialog-icon {
-      font-size: 40px;
-      margin-bottom: 10px;
-    }
+    padding-bottom: 12px;
 
     .dialog-title {
       font-size: 18px;
@@ -212,9 +205,7 @@ defineExpose({
   }
 
   .dialog-header {
-    .dialog-icon {
-      font-size: 36px;
-    }
+    padding-bottom: 10px;
 
     .dialog-title {
       font-size: 16px;

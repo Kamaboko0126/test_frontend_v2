@@ -4,9 +4,9 @@
       <div class="form-section" :class="{ 'editing-mode': userStore?.isEditing }">
         <h1 class="page-title">{{ $t('operation') }}</h1>
 
-        <!-- 修改模式提示 -->
+        <!-- 修改模式 -->
         <div v-if="userStore?.isEditing" class="edit-mode-notice">
-          <span>📝 {{ $t('editingMode') }}</span>
+          <span>📝 {{ locale === 'zh-TW' ? '修改模式：正在修改用戶資料' : 'Editing Mode: Editing user data' }}</span>
         </div>
 
         <!-- 錯誤 -->
@@ -24,6 +24,7 @@
             :placeholder="locale === 'zh-TW' ? '請輸入姓名' : 'Enter name'"
             id="name-input"
             validateType="name"
+            @enter="handleEnterSubmit"
           />
         </div>
 
@@ -35,6 +36,7 @@
             type="number"
             id="age-input"
             validateType="age"
+            @enter="handleEnterSubmit"
           />
         </div>
 
@@ -67,7 +69,7 @@
         </div>
       </div>
 
-      <!-- 資料表格 -->
+      <!-- 用戶資料 -->
       <div class="table-section">
         <table class="data-table">
           <thead>
@@ -151,7 +153,7 @@ const { t } = useI18n()
 // 使用 Pinia store
 const userStore = useUserStore()
 
-// 對話框引用
+// 對話框
 const confirmDialogRef = ref()
 const messageDialogRef = ref()
 
@@ -165,7 +167,7 @@ const dialogConfig = reactive({
   onCancel: () => {},
 })
 
-// 訊息對話框配置
+// 對話框配置
 const messageConfig = reactive({
   title: t('info'),
   message: '',
@@ -180,7 +182,7 @@ const formData = reactive({
   age: '',
 })
 
-// 通用確認對話框函數
+// 通用確認對話框
 const showConfirmDialog = (
   title: string,
   message: string,
@@ -199,7 +201,7 @@ const showConfirmDialog = (
   })
 }
 
-// 通用訊息對話框函數
+// 通用對話框函數
 const showMessageDialog = (
   title: string,
   message: string,
@@ -214,6 +216,75 @@ const showMessageDialog = (
 
     messageDialogRef.value?.show()
   })
+}
+
+// Enter 鍵提交處理
+const handleEnterSubmit = async () => {
+  console.log('handleEnterSubmit 被調用')
+  // alert('handleEnterSubmit 被調用了！')
+  console.log('userStore:', userStore)
+  console.log('formData:', formData)
+  
+  if (!userStore) return
+
+  // 檢查表單是否填寫完整
+  if (!formData.name || !formData.age) {
+    console.log('表單未填寫完整')
+    await showMessageDialog(t('error'), t('fillAllFields'), 'error')
+    return
+  }
+
+  console.log('表單已填寫完整，準備顯示確認對話框')
+
+  // 根據是否在編輯模式決定顯示對應的確認對話框
+  if (userStore.isEditing) {
+    // 顯示修改確認對話框
+    const confirmModify = await showConfirmDialog(
+      t('confirmModify'),
+      `${t('modifyUser')}\n\n${t('userInfo')}:\n${t('name')}: ${formData.name}\n${t('age')}: ${formData.age}`,
+      t('confirm'),
+      t('cancel')
+    )
+
+    if (confirmModify) {
+      // 如果用戶確認，才執行修改
+      const result = await userStore.updateUser(userStore.editingUserId!, {
+        name: formData.name,
+        age: parseInt(formData.age),
+      })
+
+      if (result.success) {
+        await showMessageDialog(t('success'), t('modifySuccess'), 'success')
+        clearForm()
+        userStore.exitEditMode()
+      } else {
+        await showMessageDialog(t('error'), result.error, 'error')
+      }
+    }
+  } else {
+    // 顯示新增確認對話框
+    const confirmAdd = await showConfirmDialog(
+      t('confirmAdd'),
+      `${t('addUser')}\n\n${t('userInfo')}:\n${t('name')}: ${formData.name}\n${t('age')}: ${formData.age}`,
+      t('confirm'),
+      t('cancel')
+    )
+
+    if (confirmAdd) {
+      // 如果用戶確認，才執行新增
+      const result = await userStore.createUser({
+        name: formData.name,
+        age: parseInt(formData.age),
+      })
+
+      if (result.success) {
+        await showMessageDialog(t('success'), t('addSuccess'), 'success')
+        clearForm()
+      } else {
+        await showMessageDialog(t('error'), result.error, 'error')
+      }
+    }
+  }
 }
 
 // 修改功能
