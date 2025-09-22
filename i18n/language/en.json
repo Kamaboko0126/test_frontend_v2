@@ -1,4 +1,10 @@
 {
   "welcome": "Welcome",
-  "test": "Test"
+  "test": "Test",
+  "operation": "Operation",
+  "name": "Name",
+  "age": "Age",
+  "modify": "Modify",
+  "add": "Add",
+  "delete": "Delete"
 }
